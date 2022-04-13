@@ -1,4 +1,6 @@
-﻿namespace Business.Category
+﻿using Models;
+
+namespace Business
 {
     internal interface ICategoryApiRepository
     {
