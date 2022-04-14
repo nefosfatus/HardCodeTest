@@ -13,6 +13,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped(typeof(IMongoRepository<>), typeof(MongoRepository<>));
 builder.Services.AddTransient(typeof(ICategoryApiRepository), typeof(CategoryApiRepository));
+builder.Services.AddTransient(typeof(IProductApiRepository), typeof(ProductApiRepository));
+
 
 //Setup connection to MongoDB
 builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDbSettings"));
@@ -22,13 +24,8 @@ builder.Services.AddSingleton<IMongoDbSettings>(serviceProvider =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
+app.UseSwagger();
+app.UseSwaggerUI();
 app.MapControllers();
 
 app.Run();

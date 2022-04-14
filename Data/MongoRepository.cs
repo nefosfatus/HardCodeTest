@@ -13,11 +13,9 @@ namespace Data
         {
             var client = new MongoClient(settings.ConnectionString);
             var database = client.GetDatabase(settings.DatabaseName);
-            _collection = database.GetCollection<TDocument>(GetCollectionName(typeof(TDocument)));
-
-            bool isMongoLive = database.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
-            if (isMongoLive is false) 
-                throw new Exception("Can't connect to database");
+            CheckConnection(database);
+            var collectionName = GetCollectionName(typeof(TDocument));
+            _collection = database.GetCollection<TDocument>(collectionName);
         }
 
         private protected string? GetCollectionName(Type documentType)
@@ -46,16 +44,6 @@ namespace Data
             return _collection.Find(filterExpression).Project(projectionExpression).ToEnumerable();
         }
 
-        public virtual TDocument FindOne(Expression<Func<TDocument, bool>> filterExpression)
-        {
-            return _collection.Find(filterExpression).FirstOrDefault();
-        }
-
-        public virtual Task<TDocument> FindOneAsync(Expression<Func<TDocument, bool>> filterExpression)
-        {
-            return Task.Run(() => _collection.Find(filterExpression).FirstOrDefaultAsync());
-        }
-
         public virtual TDocument FindById(string id)
         {
             var objectId = new ObjectId(id);
@@ -63,32 +51,9 @@ namespace Data
             return _collection.Find(filter).SingleOrDefault();
         }
 
-        public virtual Task<TDocument> FindByIdAsync(string id)
-        {
-            return Task.Run(() =>
-            {
-                var objectId = new ObjectId(id);
-                var filter = Builders<TDocument>.Filter.Eq(doc => doc.Id, objectId);
-                return _collection.Find(filter).SingleOrDefaultAsync();
-            });
-        }
-
-
-        public virtual void InsertOne(TDocument document)
-        {
-            _collection.InsertOne(document);
-        }
-
         public virtual Task InsertOneAsync(TDocument document)
         {
             return Task.Run(() => _collection.InsertOneAsync(document));
-        }
-
-        public void DeleteById(string id)
-        {
-            var objectId = new ObjectId(id);
-            var filter = Builders<TDocument>.Filter.Eq(doc => doc.Id, objectId);
-            _collection.FindOneAndDelete(filter);
         }
 
         public Task DeleteByIdAsync(string id)
@@ -99,6 +64,12 @@ namespace Data
                 var filter = Builders<TDocument>.Filter.Eq(doc => doc.Id, objectId);
                 _collection.FindOneAndDeleteAsync(filter);
             });
+        }
+        private void CheckConnection(IMongoDatabase database)
+        {
+            bool isMongoLive = database.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
+            if (isMongoLive is false)
+                throw new Exception("Can't connect to database");
         }
     }
 }

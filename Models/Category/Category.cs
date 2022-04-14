@@ -8,7 +8,8 @@ namespace Models
     {
         [BsonElement("Name")]
         public string? Name { get; set; }
-        public decimal Price { get; set; }
+        [BsonElement("Description")]
+        public string? Description { get; set; }
         public IList<string>? AdditionalFields { get; set; }
     }
 }

@@ -18,14 +18,14 @@ namespace HardCodeTest.Controllers
             _repository = repository;
         }
 
-        //GET api/category/getall
+        //GET api/category
         [HttpGet]
         public ActionResult<IEnumerable<Category>> GetAll()
         {
             return Ok(_repository.GetAll());
         }
 
-        //GET api/category/getbyid/{id}
+        //GET api/category/{id}
         [HttpGet("{id}")]
         public ActionResult<Category> GetById(string id)
         {
@@ -37,7 +37,7 @@ namespace HardCodeTest.Controllers
             return Ok(result);
         }
 
-        //POST api/category/create
+        //POST api/category
         //[Authorize]
         [HttpPost]
         public IActionResult Create(Category category)
@@ -48,7 +48,7 @@ namespace HardCodeTest.Controllers
             return Ok(category);
         }
 
-        //DELETE api/category/delete/{id}
+        //DELETE api/category/{id}
         //[Authorize]
         [HttpDelete("{id}")]
         public IActionResult Delete(string id)
