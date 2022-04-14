@@ -2,13 +2,11 @@
 
 namespace Business
 {
-    internal interface ICategoryApiRepository
+    public interface ICategoryApiRepository
     {
-        bool SaveChanges();
-
         IEnumerable<Category> GetAll();
-        Category GetById(int id);
+        Category GetById(string id);
         void Create(Category item);
-        void Delete(Category item);
+        void Delete(string id);
     }
 }

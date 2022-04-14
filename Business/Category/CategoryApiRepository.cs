@@ -1,32 +1,34 @@
-﻿using Models;
+﻿using Data;
+using Models;
 
 namespace Business
 {
-    internal class CategoryApiRepository : ICategoryApiRepository
+    public class CategoryApiRepository : ICategoryApiRepository
     {
-        public void Create(Category item)
+        private readonly IMongoRepository<Category> _context;
+        public CategoryApiRepository(IMongoRepository<Category> context)
         {
-            throw new NotImplementedException();
+            _context = context;
         }
 
-        public void Delete(Category item)
+        public async void Create(Category item)
         {
-            throw new NotImplementedException();
+            await _context.InsertOneAsync(item);
+        }
+
+        public async void Delete(string id)
+        {
+            await _context.DeleteByIdAsync(id);
         }
 
         public IEnumerable<Category> GetAll()
         {
-            throw new NotImplementedException();
+            return _context.AsQueryable();
         }
 
-        public Category GetById(int id)
+        public Category GetById(string id)
         {
-            throw new NotImplementedException();
-        }
-
-        public bool SaveChanges()
-        {
-            throw new NotImplementedException();
+            return _context.FindById(id);
         }
     }
 }

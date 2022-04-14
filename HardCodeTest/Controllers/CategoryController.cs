@@ -1,6 +1,9 @@
-﻿using Data;
+﻿using Business;
+using Data;
 using Microsoft.AspNetCore.Mvc;
 using Models;
+using MongoDB.Bson;
+using MongoDB.Driver;
 
 namespace HardCodeTest.Controllers
 {
@@ -8,30 +11,56 @@ namespace HardCodeTest.Controllers
     [Route("api/[controller]")]
     public class CategoryController : ControllerBase
     {
-        private readonly IMongoRepository<Category> _repository;
+        private readonly ICategoryApiRepository _repository;
 
-        public CategoryController(IMongoRepository<Category> peopleRepository)
+        public CategoryController(ICategoryApiRepository repository)
         {
-            _repository = peopleRepository;
+            _repository = repository;
         }
 
-        [HttpPost()]
-        public async Task<IActionResult> Add(string name)
+        //GET api/category/getall
+        [HttpGet]
+        public ActionResult<IEnumerable<Category>> GetAll()
         {
-            var category = new Category()
-            {
-                Name = name
-            };
+            return Ok(_repository.GetAll());
+        }
 
-            await _repository.InsertOneAsync(category);
+        //GET api/category/getbyid/{id}
+        [HttpGet("{id}")]
+        public ActionResult<Category> GetById(string id)
+        {
+            var result = _repository.GetById(id);
+
+            if(result is null)
+                return NotFound();
+
+            return Ok(result);
+        }
+
+        //POST api/category/create
+        //[Authorize]
+        [HttpPost]
+        public IActionResult Create(Category category)
+        {
+            if (ModelState.IsValid is false) return BadRequest(ModelState);
+
+            _repository.Create(category);
             return Ok(category);
-            
         }
 
-        [HttpGet()]
-        public IEnumerable<Category> GetCategories()
+        //DELETE api/category/delete/{id}
+        //[Authorize]
+        [HttpDelete("{id}")]
+        public IActionResult Delete(string id)
         {
-            return _repository.AsQueryable();
+            if (ModelState.IsValid is false) return BadRequest(ModelState);
+
+            if (_repository.GetById(id) is null)
+                throw new ArgumentNullException($"Category with id: {id} doesn't exist");
+
+            _repository.Delete(id);
+            return NoContent();
         }
+
     }
 }
