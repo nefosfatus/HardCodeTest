@@ -1,12 +1,7 @@
 ﻿using Models;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Data
 {
@@ -19,10 +14,10 @@ namespace Data
             var client = new MongoClient(settings.ConnectionString);
             var database = client.GetDatabase(settings.DatabaseName);
             _collection = database.GetCollection<TDocument>(GetCollectionName(typeof(TDocument)));
-            bool isMongoLive = database.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
 
+            bool isMongoLive = database.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
             if (isMongoLive is false) 
-                throw new Exception("Can't coinnect to database");
+                throw new Exception("Can't connect to database");
         }
 
         private protected string? GetCollectionName(Type documentType)
@@ -86,51 +81,7 @@ namespace Data
 
         public virtual Task InsertOneAsync(TDocument document)
         {
-            var client = new MongoClient($@"mongodb://root:exple@localhost:27017");
-            var database = client.GetDatabase("SampleDb");
-            var collection = database.GetCollection<Category>("Category");
-
-            collection.InsertOne(new Category
-            {
-                Name = "SampleValue"
-            });
-
-            System.Console.WriteLine("Done");
-
             return Task.Run(() => _collection.InsertOneAsync(document));
-        }
-
-        public void InsertMany(ICollection<TDocument> documents)
-        {
-            _collection.InsertMany(documents);
-        }
-
-
-        public virtual async Task InsertManyAsync(ICollection<TDocument> documents)
-        {
-            await _collection.InsertManyAsync(documents);
-        }
-
-        public void ReplaceOne(TDocument document)
-        {
-            var filter = Builders<TDocument>.Filter.Eq(doc => doc.Id, document.Id);
-            _collection.FindOneAndReplace(filter, document);
-        }
-
-        public virtual async Task ReplaceOneAsync(TDocument document)
-        {
-            var filter = Builders<TDocument>.Filter.Eq(doc => doc.Id, document.Id);
-            await _collection.FindOneAndReplaceAsync(filter, document);
-        }
-
-        public void DeleteOne(Expression<Func<TDocument, bool>> filterExpression)
-        {
-            _collection.FindOneAndDelete(filterExpression);
-        }
-
-        public Task DeleteOneAsync(Expression<Func<TDocument, bool>> filterExpression)
-        {
-            return Task.Run(() => _collection.FindOneAndDeleteAsync(filterExpression));
         }
 
         public void DeleteById(string id)
@@ -148,16 +99,6 @@ namespace Data
                 var filter = Builders<TDocument>.Filter.Eq(doc => doc.Id, objectId);
                 _collection.FindOneAndDeleteAsync(filter);
             });
-        }
-
-        public void DeleteMany(Expression<Func<TDocument, bool>> filterExpression)
-        {
-            _collection.DeleteMany(filterExpression);
-        }
-
-        public Task DeleteManyAsync(Expression<Func<TDocument, bool>> filterExpression)
-        {
-            return Task.Run(() => _collection.DeleteManyAsync(filterExpression));
         }
     }
 }
