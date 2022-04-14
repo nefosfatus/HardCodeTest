@@ -8,6 +8,9 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY ["HardCodeTest/HardCodeTest.csproj", "HardCodeTest/"]
+COPY ["Models/Models.csproj", "Models/"]
+COPY ["Business/Business.csproj", "Business/"]
+COPY ["Data/Data.csproj", "Data/"]
 RUN dotnet restore "HardCodeTest/HardCodeTest.csproj"
 COPY . .
 WORKDIR "/src/HardCodeTest"
