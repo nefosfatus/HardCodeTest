@@ -1,9 +1,6 @@
 ﻿using Business;
-using Data;
 using Microsoft.AspNetCore.Mvc;
 using Models;
-using MongoDB.Bson;
-using MongoDB.Driver;
 
 namespace HardCodeTest.Controllers
 {
@@ -31,7 +28,7 @@ namespace HardCodeTest.Controllers
         {
             var result = _repository.GetById(id);
 
-            if(result is null)
+            if (result is null)
                 return NotFound();
 
             return Ok(result);

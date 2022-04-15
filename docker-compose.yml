@@ -1,6 +1,7 @@
 version: '3.9'
 services:
   webapp:
+    image: nefosfatus/hardcodetest:latest
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80

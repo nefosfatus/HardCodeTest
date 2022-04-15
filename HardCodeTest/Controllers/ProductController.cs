@@ -60,7 +60,7 @@ namespace HardCodeTest.Controllers
             if (category is null)
                 return NotFound();
 
-            var categoryProducts = _repositoryProduct.Filter(currentFilter).Where(s=>s.CategoryId == categoryId);
+            var categoryProducts = _repositoryProduct.Filter(currentFilter).Where(s => s.CategoryId == categoryId);
 
             return Ok(categoryProducts);
         }
@@ -73,7 +73,7 @@ namespace HardCodeTest.Controllers
             if (ModelState.IsValid is false) return BadRequest(ModelState);
 
             var category = _repositoryCategory.GetById(product.CategoryId);
-            if(category is null)
+            if (category is null)
                 throw new ArgumentNullException($"Category with id: {product.CategoryId} doesn't exist");
 
             _repositoryProduct.Create(product);

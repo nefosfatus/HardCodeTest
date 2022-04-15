@@ -11,9 +11,12 @@ namespace Data
 
         public MongoRepository(IMongoDbSettings settings)
         {
+            //setup db connection
             var client = new MongoClient(settings.ConnectionString);
             var database = client.GetDatabase(settings.DatabaseName);
             CheckConnection(database);
+
+            //get collection
             var collectionName = GetCollectionName(typeof(TDocument));
             _collection = database.GetCollection<TDocument>(collectionName);
         }
@@ -65,6 +68,8 @@ namespace Data
                 _collection.FindOneAndDeleteAsync(filter);
             });
         }
+
+        //ping db
         private void CheckConnection(IMongoDatabase database)
         {
             bool isMongoLive = database.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
